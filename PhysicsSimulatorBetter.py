@@ -3,7 +3,7 @@ import pygame
 import random
 from pygame import gfxdraw
 
-
+#Need to implement substeps, for more accurate simulation
 G = 6.67
 
 class Particle:
@@ -104,8 +104,13 @@ class Particle:
         if 2 <= distance <= 0:
             distance = 2
 
+        try:
+
         #Calculating the gravitational forces between two particles
-        force = G * (self.mass * other.mass) / distance ** 2
+            force = G * (self.mass * other.mass) / distance ** 2
+
+        except ZeroDivisionError:
+            force = G * (self.mass * other.mass) / 1
 
         #atan function -> y over x and gives the angle associated with it
         theta = math.atan2(distance_y, distance_x)
@@ -134,6 +139,7 @@ class Particle:
                 self.y = self.y + self.y_vel * Particle.TIMESTEP
                 other.x = other.x + other.x_vel * Particle.TIMESTEP
                 other.y = other.y + other.y_vel * Particle.TIMESTEP
+                
 
 
     #updates the postion of particles besed on the gravcitational force it is effected by
@@ -152,7 +158,7 @@ class Particle:
             self.x_vel *= -0.9 
         if self.y >= HEIGHT or self.y <= 0:
             self.y_vel *= -0.9 
-        #if the particle is still out of bounds after the collision given some tolerance, it will be reset to the center of the screen
+        #if the particle is still out of bounds after the collision given some tolerance, it will be reset to the a random point in the screen
         if self.x >= WIDTH + self.radius or self.x <= -self.radius:
             #Set the speed to 0 AND give it new coordinates
             self.x_vel = 0
@@ -294,8 +300,6 @@ def main():
         for particle in particles:
             particle.update_position(particles)
             particle.draw(WIN)
-
-        print(particle.x_vel)
 
         pygame.display.update()        
 
